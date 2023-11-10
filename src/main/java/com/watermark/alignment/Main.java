@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Serializable;
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.Watermark;
 import org.apache.flink.api.common.eventtime.WatermarkGenerator;
@@ -37,7 +36,7 @@ public class Main {
     WatermarkStrategy<String> strategy = WatermarkStrategy.forGenerator(
             ctx -> new WatermarkOnEvent()).withIdleness(Duration.ofSeconds(5))
         .withTimestampAssigner(new TimeAssigner())
-        .withWatermarkAlignment("alignment", Duration.ofSeconds(10), Duration.ofSeconds(1));
+        .withWatermarkAlignment("alignment", Duration.ofSeconds(1), Duration.ofMillis(200));
 
     DataStreamSource<String> one = env.fromSource(sourceOne, strategy, "uidOne");
 
@@ -61,6 +60,7 @@ public class Main {
     public void onEvent(String event, long eventTimestamp, WatermarkOutput output) {
       Watermark watermark = new Watermark(eventTimestamp);
       LOGGER.info("Watermark emitted: {} ", watermark);
+
       output.emitWatermark(watermark);
     }
 
