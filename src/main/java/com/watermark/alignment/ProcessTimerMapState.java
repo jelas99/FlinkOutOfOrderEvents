@@ -15,6 +15,12 @@ import org.apache.flink.streaming.api.TimerService;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 
+/**
+ * We are using MapState because is more performance with RocksDb.
+ * With RocksDb the MapState serialization occurs per-entry.
+ *
+ *
+ */
 public class ProcessTimerMapState extends KeyedProcessFunction<String, Event, Event> {
 
   private transient MapState<Long, List<Event>> queueState = null;
@@ -50,12 +56,11 @@ public class ProcessTimerMapState extends KeyedProcessFunction<String, Event, Ev
       throws Exception {
     
     Long watermark = ctx.timerService().currentWatermark();
-
     List<Long> sortedTimestamps = StreamSupport.stream(queueState.keys().spliterator(), false)
         .sorted()
         .collect(Collectors.toList());
 
-    for (var timeState: sortedTimestamps) {
+    for (var timeState : sortedTimestamps) {
       if(timeState <= watermark) {
         queueState.get(timeState).forEach(out::collect);
         queueState.remove(timeState);
