@@ -1,4 +1,4 @@
-package com.watermark.alignment;
+package com.watermark;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;

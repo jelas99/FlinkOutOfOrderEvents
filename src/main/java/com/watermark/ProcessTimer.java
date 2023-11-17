@@ -1,4 +1,4 @@
-package com.watermark.alignment;
+package com.watermark;
 
 import java.util.PriorityQueue;
 import org.apache.flink.api.common.state.ValueState;

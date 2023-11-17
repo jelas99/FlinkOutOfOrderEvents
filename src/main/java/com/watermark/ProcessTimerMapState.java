@@ -1,4 +1,4 @@
-package com.watermark.alignment;
+package com.watermark;
 
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 

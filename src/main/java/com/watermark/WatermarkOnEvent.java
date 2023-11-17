@@ -1,4 +1,4 @@
-package com.watermark.alignment;
+package com.watermark;
 
 import java.io.Serializable;
 import org.apache.flink.api.common.eventtime.Watermark;
