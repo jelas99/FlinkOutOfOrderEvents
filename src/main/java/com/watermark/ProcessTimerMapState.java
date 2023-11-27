@@ -4,8 +4,6 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -54,20 +52,8 @@ public class ProcessTimerMapState extends KeyedProcessFunction<String, Event, Ev
   @Override
   public void onTimer(long timestamp, OnTimerContext ctx, Collector<Event> out)
       throws Exception {
-    
-    Long watermark = ctx.timerService().currentWatermark();
-    List<Long> sortedTimestamps = StreamSupport.stream(queueState.keys().spliterator(), false)
-        .sorted()
-        .collect(Collectors.toList());
-
-    for (var timeState : sortedTimestamps) {
-      if(timeState <= watermark) {
-        queueState.get(timeState).forEach(out::collect);
-        queueState.remove(timeState);
-      } else {
-        break;
-      }
-    }
+        queueState.get(timestamp).forEach(out::collect);
+        queueState.remove(timestamp);
   }
 }
 
